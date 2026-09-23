@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>タスク管理ボード(プロトタイプ)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <h1>タスク管理ボード</h1>
+    <div class="filters">
+      <input type="search" id="search" placeholder="タイトル・詳細を検索">
+      <select id="filter-priority" aria-label="優先度で絞り込み">
+        <option value="">優先度:すべて</option>
+        <option value="high">高</option>
+        <option value="mid">中</option>
+        <option value="low">低</option>
+      </select>
+      <select id="filter-due" aria-label="期限の状態で絞り込み">
+        <option value="">期限:すべて</option>
+        <option value="soon">期限間近</option>
+        <option value="overdue">期限切れ</option>
+      </select>
+      <select id="filter-label" aria-label="ラベル色で絞り込み">
+        <option value="">ラベル:すべて</option>
+        <option value="red">赤</option>
+        <option value="blue">青</option>
+        <option value="green">緑</option>
+        <option value="yellow">黄</option>
+        <option value="purple">紫</option>
+      </select>
+      <button type="button" id="filter-clear" class="btn">条件クリア</button>
+    </div>
+    <div class="header-actions">
+      <button type="button" id="reset" class="btn">サンプルに戻す</button>
+      <button type="button" id="add" class="btn btn-primary">+ カードを追加</button>
+    </div>
+  </header>
+
+  <p id="drag-hint" class="drag-hint" hidden>絞り込み中はドラッグでの移動・並べ替えができません。</p>
+
+  <main class="board">
+    <section class="column" data-status="todo">
+      <h2>未着手 <span class="count"></span></h2>
+      <div class="card-list" data-status="todo"></div>
+    </section>
+    <section class="column" data-status="doing">
+      <h2>進行中 <span class="count"></span></h2>
+      <div class="card-list" data-status="doing"></div>
+    </section>
+    <section class="column" data-status="done">
+      <h2>完了 <span class="count"></span></h2>
+      <div class="card-list" data-status="done"></div>
+    </section>
+  </main>
+
+  <dialog id="modal">
+    <form id="card-form" method="dialog">
+      <h3 id="modal-title">カードを追加</h3>
+
+      <label>タイトル <span class="required">必須</span>
+        <input type="text" id="f-title" required maxlength="100">
+      </label>
+
+      <label>詳細
+        <textarea id="f-detail" rows="4"></textarea>
+      </label>
+
+      <label>期限
+        <input type="date" id="f-due">
+      </label>
+
+      <label>優先度 <span class="required">必須</span>
+        <select id="f-priority" required>
+          <option value="high">高</option>
+          <option value="mid" selected>中</option>
+          <option value="low">低</option>
+        </select>
+      </label>
+
+      <fieldset>
+        <legend>ラベル色</legend>
+        <div class="label-choices" id="f-label"></div>
+      </fieldset>
+
+      <div class="modal-actions">
+        <button type="button" id="delete" class="btn btn-danger">削除</button>
+        <span class="spacer"></span>
+        <button type="button" id="cancel" class="btn">キャンセル</button>
+        <button type="submit" class="btn btn-primary">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

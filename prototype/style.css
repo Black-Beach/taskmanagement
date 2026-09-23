@@ -1,0 +1,234 @@
+:root {
+  --bg: #f1f3f6;
+  --col-bg: #e4e7ec;
+  --card-bg: #fff;
+  --text: #24292f;
+  --muted: #6b7280;
+  --primary: #2563eb;
+  --danger: #dc2626;
+  --soon: #f59e0b;
+  --label-red: #ef4444;
+  --label-blue: #3b82f6;
+  --label-green: #22c55e;
+  --label-yellow: #eab308;
+  --label-purple: #a855f7;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ---------- ヘッダー ---------- */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  background: #fff;
+  border-bottom: 1px solid #d5d9e0;
+  flex-wrap: wrap;
+}
+.header h1 { font-size: 18px; margin: 0; }
+.filters { display: flex; gap: 8px; flex: 1; flex-wrap: wrap; }
+.filters input[type="search"] { min-width: 220px; }
+.header-actions { display: flex; gap: 8px; }
+
+input, select, textarea, .btn {
+  font: inherit;
+  padding: 6px 10px;
+  border: 1px solid #c5cad3;
+  border-radius: 6px;
+  background: #fff;
+}
+.btn { cursor: pointer; }
+.btn:hover { background: #f3f4f6; }
+.btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-danger { color: var(--danger); border-color: var(--danger); }
+.btn-danger:hover { background: #fef2f2; }
+
+.drag-hint {
+  margin: 8px 20px 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ---------- ボード ---------- */
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(260px, 1fr));
+  gap: 16px;
+  padding: 16px 20px;
+  align-items: start;
+}
+.column {
+  background: var(--col-bg);
+  border-radius: 10px;
+  padding: 10px;
+}
+.column h2 {
+  font-size: 15px;
+  margin: 4px 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.count {
+  font-size: 12px;
+  font-weight: normal;
+  color: var(--muted);
+  background: #fff;
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.card-list {
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 4px;
+  border-radius: 8px;
+}
+.card-list.drag-over { background: rgba(37, 99, 235, 0.08); }
+
+/* ---------- カード ---------- */
+.card {
+  position: relative;
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 10px 12px 10px 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  border-left: 6px solid #d1d5db; /* ラベル色なしの帯 */
+}
+.card[draggable="true"] { cursor: grab; }
+.card.dragging { opacity: 0.4; }
+
+.card[data-label="red"]    { border-left-color: var(--label-red); }
+.card[data-label="blue"]   { border-left-color: var(--label-blue); }
+.card[data-label="green"]  { border-left-color: var(--label-green); }
+.card[data-label="yellow"] { border-left-color: var(--label-yellow); }
+.card[data-label="purple"] { border-left-color: var(--label-purple); }
+
+.card-title { font-weight: bold; word-break: break-word; }
+.card-detail {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--muted);
+  white-space: pre-wrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+/* 優先度:色+記号 */
+.priority {
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  color: #fff;
+}
+.priority.high { background: #dc2626; }
+.priority.mid  { background: #f59e0b; }
+.priority.low  { background: #6b7280; }
+
+.due { color: var(--muted); }
+.due-badge {
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+/* 期限間近:オレンジで目立たせる */
+.card.soon {
+  background: #fff7ed;
+  box-shadow: 0 0 0 2px var(--soon), 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+.card.soon .due { color: #c2410c; font-weight: bold; }
+.card.soon .due-badge { background: var(--soon); color: #fff; }
+
+/* 期限切れ:グレーアウト+文字 */
+.card.overdue {
+  background: #e5e7eb;
+  filter: grayscale(1);
+  opacity: 0.75;
+}
+.card.overdue .due-badge { background: #4b5563; color: #fff; }
+
+/* ---------- ドロップ位置のガイド線 ---------- */
+.drop-indicator {
+  height: 3px;
+  background: var(--primary);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ---------- モーダル ---------- */
+dialog {
+  border: none;
+  border-radius: 10px;
+  padding: 0;
+  width: 440px;
+  max-width: 92vw;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
+#card-form { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+#card-form h3 { margin: 0; }
+#card-form label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+#card-form fieldset { border: none; padding: 0; margin: 0; }
+#card-form legend { font-size: 14px; padding: 0; margin-bottom: 4px; }
+.required { font-size: 11px; color: var(--danger); margin-left: 4px; }
+
+.label-choices { display: flex; gap: 10px; align-items: center; }
+.label-choices label {
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.label-choices input { position: absolute; opacity: 0; pointer-events: none; }
+.swatch {
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  background: #fff;
+  box-shadow: 0 0 0 1px #c5cad3;
+}
+.swatch[data-color="red"]    { background: var(--label-red); }
+.swatch[data-color="blue"]   { background: var(--label-blue); }
+.swatch[data-color="green"]  { background: var(--label-green); }
+.swatch[data-color="yellow"] { background: var(--label-yellow); }
+.swatch[data-color="purple"] { background: var(--label-purple); }
+.swatch[data-color=""] { position: relative; }
+.swatch[data-color=""]::after {
+  content: "×";
+  position: absolute;
+  inset: 0;
+  text-align: center;
+  line-height: 20px;
+  color: var(--muted);
+}
+.label-choices input:checked + .swatch { border-color: #fff; box-shadow: 0 0 0 2px var(--text); }
+.label-choices input:focus-visible + .swatch { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+.modal-actions { display: flex; gap: 8px; margin-top: 4px; }
+.spacer { flex: 1; }
