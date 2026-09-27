@@ -318,6 +318,7 @@
 
     clearDragUI();
     draggingId = null;
+    hideToast(); // 手動で並べ直したら、直前の並べ替えは取り消せないようにする
     save();
     render();
   });
@@ -326,6 +327,65 @@
     draggingId = null;
     clearDragUI();
     document.querySelectorAll('.card.dragging').forEach((el) => el.classList.remove('dragging'));
+  });
+
+  // ---------- 並べ替えボタン ----------
+  // 表示モードではなく、その時点の並び順(position)を書き換える一回きりの操作。
+  // そのため並べ替えた後もドラッグで自由に入れ替えられる。
+  const PRIORITY_RANK = { high: 0, mid: 1, low: 2 };
+  const byPriority = (a, b) => PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority];
+  // 期限の近い順。期限なしは末尾
+  const byDue = (a, b) => {
+    if (a.due === b.due) return 0;
+    if (!a.due) return 1;
+    if (!b.due) return -1;
+    return a.due < b.due ? -1 : 1;
+  };
+  // 同順位は第2キー → 元の並び順(position)の順で決める
+  const SORTERS = {
+    priority: { name: '優先度順', compare: (a, b) => byPriority(a, b) || byDue(a, b) || a.position - b.position },
+    due: { name: '期限順', compare: (a, b) => byDue(a, b) || byPriority(a, b) || a.position - b.position },
+  };
+  const COLUMN_NAME = { todo: '未着手', doing: '進行中', done: '完了' };
+
+  let undoState = null; // { status, positions: Map<id, position> }
+  let toastTimer = null;
+  function hideToast() {
+    $('#toast').hidden = true;
+    clearTimeout(toastTimer);
+    undoState = null;
+  }
+  const showToast = (message) => {
+    $('#toast-message').textContent = message;
+    $('#toast').hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 6000);
+  };
+
+  board.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-sort');
+    if (!btn) return;
+    const status = btn.closest('.column').dataset.status;
+    const sorter = SORTERS[btn.dataset.sort];
+    const column = inColumn(status);
+    // 絞り込み中でも非表示カードを含めた列全体を並べ替える
+    undoState = { status, positions: new Map(column.map((c) => [c.id, c.position])) };
+    column.sort(sorter.compare).forEach((c, i) => { c.position = i; });
+    save();
+    render();
+    showToast(`「${COLUMN_NAME[status]}」を${sorter.name}に並べ替えました`);
+  });
+
+  $('#toast-undo').addEventListener('click', () => {
+    if (!undoState) return;
+    // 並べ替え後に追加・削除されたカードがあっても、残ったカードで番号を振り直す
+    cards.forEach((c) => {
+      if (c.status === undoState.status && undoState.positions.has(c.id)) c.position = undoState.positions.get(c.id);
+    });
+    renumber(undoState.status);
+    hideToast();
+    save();
+    render();
   });
 
   // ---------- 起動 ----------

@@ -72,13 +72,32 @@ input, select, textarea, .btn {
   border-radius: 10px;
   padding: 10px;
 }
+.column-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 4px 6px 10px;
+}
 .column h2 {
   font-size: 15px;
-  margin: 4px 6px 10px;
+  margin: 0;
   display: flex;
   align-items: center;
   gap: 8px;
 }
+.sort-actions { display: flex; gap: 4px; }
+.btn-sort {
+  font: inherit;
+  font-size: 12px;
+  padding: 2px 8px;
+  border: 1px solid #c5cad3;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--muted);
+  cursor: pointer;
+}
+.btn-sort:hover { color: var(--text); border-color: var(--muted); }
 .count {
   font-size: 12px;
   font-weight: normal;
@@ -178,6 +197,34 @@ input, select, textarea, .btn {
   border-radius: 2px;
   flex-shrink: 0;
 }
+
+/* ---------- 並べ替え後の「元に戻す」通知 ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: #1f2937;
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  font-size: 14px;
+}
+.toast[hidden] { display: none; }
+.toast-undo {
+  font: inherit;
+  background: none;
+  border: none;
+  color: #93c5fd;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+}
+.toast-undo:hover { text-decoration: underline; }
 
 /* ---------- モーダル ---------- */
 dialog {

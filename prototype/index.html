@@ -42,15 +42,33 @@
 
   <main class="board">
     <section class="column" data-status="todo">
-      <h2>未着手 <span class="count"></span></h2>
+      <div class="column-head">
+        <h2>未着手 <span class="count"></span></h2>
+        <div class="sort-actions">
+          <button type="button" class="btn-sort" data-sort="priority" title="未着手列を優先度の高い順に並べ替える">優先度順</button>
+          <button type="button" class="btn-sort" data-sort="due" title="未着手列を期限の近い順に並べ替える">期限順</button>
+        </div>
+      </div>
       <div class="card-list" data-status="todo"></div>
     </section>
     <section class="column" data-status="doing">
-      <h2>進行中 <span class="count"></span></h2>
+      <div class="column-head">
+        <h2>進行中 <span class="count"></span></h2>
+        <div class="sort-actions">
+          <button type="button" class="btn-sort" data-sort="priority" title="進行中列を優先度の高い順に並べ替える">優先度順</button>
+          <button type="button" class="btn-sort" data-sort="due" title="進行中列を期限の近い順に並べ替える">期限順</button>
+        </div>
+      </div>
       <div class="card-list" data-status="doing"></div>
     </section>
     <section class="column" data-status="done">
-      <h2>完了 <span class="count"></span></h2>
+      <div class="column-head">
+        <h2>完了 <span class="count"></span></h2>
+        <div class="sort-actions">
+          <button type="button" class="btn-sort" data-sort="priority" title="完了列を優先度の高い順に並べ替える">優先度順</button>
+          <button type="button" class="btn-sort" data-sort="due" title="完了列を期限の近い順に並べ替える">期限順</button>
+        </div>
+      </div>
       <div class="card-list" data-status="done"></div>
     </section>
   </main>
@@ -92,6 +110,11 @@
       </div>
     </form>
   </dialog>
+
+  <div id="toast" class="toast" hidden>
+    <span id="toast-message"></span>
+    <button type="button" id="toast-undo" class="toast-undo">元に戻す</button>
+  </div>
 
   <script src="app.js"></script>
 </body>
