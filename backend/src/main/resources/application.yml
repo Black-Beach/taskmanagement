@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: taskboard
+  datasource:
+    # ローカル開発用の既定値。環境変数 DB_URL / DB_USERNAME / DB_PASSWORD で上書きできる
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/taskboard}
+    username: ${DB_USERNAME:taskboard}
+    password: ${DB_PASSWORD:taskboard}
+  jpa:
+    # テーブルは Flyway で作成するため、Hibernate にはエンティティとの整合チェックだけをさせる
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
