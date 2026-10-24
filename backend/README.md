@@ -7,29 +7,22 @@ Spring Boot 4.1 / Java 25 / PostgreSQL 18 で構成する REST API。技術選�
 | ソフトウェア | バージョン | インストール方法 |
 |---|---|---|
 | JDK | Eclipse Temurin 25 | `winget install EclipseAdoptium.Temurin.25.JDK` |
-| PostgreSQL | 18 | EDB のインストーラー(後述の注意点を参照) |
+| Docker Desktop | 4.x | `winget install Docker.DockerDesktop`(WSL2 が必要。インストール後に再起動する) |
 
-Gradle は Gradle Wrapper(`gradlew`)が自動でダウンロードするため、インストール不要。
-
-### PostgreSQL インストール時の注意
-
-Windows のユーザー名に日本語や空白が含まれていると、EDB のインストーラーが一時フォルダのパスを扱えずに失敗する(winget 経由でも同じ)。その場合は、英数字だけのフォルダを一時フォルダに指定して、管理者権限の PowerShell からインストーラーを実行する。
-
-```powershell
-$env:TEMP = 'C:\Users\Public\pgsetup-tmp'; $env:TMP = $env:TEMP
-New-Item -ItemType Directory -Force $env:TEMP
-.\postgresql-18.x-windows-x64.exe
-```
+Gradle は Gradle Wrapper(`gradlew`)が自動でダウンロードするため、インストール不要。PostgreSQL は Docker のコンテナで動かすため、PC へのインストールは不要。
 
 ## データベースの準備
 
-PostgreSQL の管理ユーザー(postgres)で、アプリ用のユーザーとデータベースを作成する。
+Docker Desktop を起動した状態で、リポジトリ直下([compose.yaml](../compose.yaml) がある場所)で次を実行する。初回はイメージをダウンロードし、アプリ用のユーザーとデータベース(どちらも `taskboard`)を自動で作成する。
 
-```powershell
-& 'C:\Program Files\PostgreSQL\18\bin\psql.exe' -h localhost -U postgres `
-  -c "CREATE ROLE taskboard LOGIN PASSWORD 'taskboard';" `
-  -c "CREATE DATABASE taskboard OWNER taskboard ENCODING 'UTF8' TEMPLATE template0 LOCALE 'C';"
+```bash
+docker compose up -d     # PostgreSQL を起動(バックグラウンド)
+docker compose ps        # 状態の確認。STATUS が healthy なら準備完了
+docker compose stop      # 停止(データは残る)
+docker compose down -v   # コンテナとデータを削除して初期状態に戻す
 ```
+
+DB の中身を見るときは `docker compose exec db psql -U taskboard -d taskboard` で psql に入れる。
 
 テーブルはアプリの起動時に Flyway が作成する(`src/main/resources/db/migration`)。
 
@@ -39,13 +32,15 @@ PostgreSQL の管理ユーザー(postgres)で、アプリ用のユーザーと�
 | ユーザー | `taskboard` | `DB_USERNAME` |
 | パスワード | `taskboard` | `DB_PASSWORD` |
 
-既定値はローカル開発専用。
+既定値はローカル開発専用。ポートは 127.0.0.1 だけに公開しているため、他の PC からは接続できない。
 
 ## 起動・テスト
 
+先に「データベースの準備」の `docker compose up -d` で PostgreSQL を起動しておく。
+
 ```bash
 ./gradlew bootRun   # アプリを起動(http://localhost:8080)
-./gradlew test      # テストを実行(ローカルの PostgreSQL に接続する)
+./gradlew test      # テストを実行(Docker の PostgreSQL に接続する)
 ```
 
 起動後、<http://localhost:8080/actuator/health> を開いて `"status":"UP"` が返れば、DB 接続を含めて正常に動いている。

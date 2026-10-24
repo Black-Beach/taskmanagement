@@ -113,14 +113,14 @@ flowchart LR
 | 入力チェック | Bean Validation | タイトル必須・優先度の値などをサーバー側でも検証する |
 | DB マイグレーション | Flyway | テーブル定義を SQL ファイルで履歴管理し、環境を再現しやすくする |
 | テスト | JUnit 5 / Mockito / Spring Boot Test | Spring Boot に標準で含まれる |
-| 結合テスト | ローカルの PostgreSQL | 本番と同じ PostgreSQL を使ってリポジトリ・API をテストする。Docker を使わないため Testcontainers は採用しない |
+| 結合テスト | Docker の PostgreSQL | 本番と同じ PostgreSQL を使ってリポジトリ・API をテストする。現在は開発用の DB コンテナに接続している(Testcontainers の導入は今後検討) |
 
 ### 3.3 データベース・開発環境
 
 | 分類 | 採用技術 | 選定理由 |
 |---|---|---|
 | データベース | PostgreSQL 18 | 指定 |
-| ローカル環境 | PostgreSQL を Windows に直接インストール | Docker を使わず、Windows のサービスとして常駐させる。セットアップ手順は [backend/README.md](backend/README.md) を参照 |
+| ローカル環境 | Docker Desktop / Docker Compose | PostgreSQL をインストールせずに起動・破棄できる。定義はリポジトリ直下の [compose.yaml](compose.yaml)、手順は [backend/README.md](backend/README.md) を参照 |
 | バージョン管理 | Git / GitHub | 課題の提出・履歴管理 |
 
 - フロントエンドとバックエンドは別ポートで起動するため、開発時は Vite のプロキシ機能で `/api` をバックエンドへ転送し、CORS 設定を不要にする。

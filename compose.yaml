@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:18
+    environment:
+      # ローカル開発専用。backend/src/main/resources/application.yml の既定値と合わせている
+      POSTGRES_DB: taskboard
+      POSTGRES_USER: taskboard
+      POSTGRES_PASSWORD: taskboard
+      POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=C
+      TZ: Asia/Tokyo
+    ports:
+      # 自分の PC からだけ接続できるよう 127.0.0.1 に限定する
+      - "127.0.0.1:5432:5432"
+    volumes:
+      # PostgreSQL 18 以降のイメージは /var/lib/postgresql 配下にデータを置く
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskboard -d taskboard"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  db-data:
